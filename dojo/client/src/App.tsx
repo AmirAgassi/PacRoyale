@@ -132,9 +132,6 @@ function App({ sdk }: { sdk: SDK<Schema> }) {
 
   const [isOpen, setIsOpen] = useState(false);
 
-  // const [isGameActive, setIsGameActive] = useState(true);
-  // const [score, setScore] = useState(0);
-
   return (
     <>
     <Navbar/>
@@ -275,22 +272,13 @@ function App({ sdk }: { sdk: SDK<Schema> }) {
                 }`}
               >
                 <p className="text-lg mt-4">
-                  To start, do so-and-so and add more text here detailing how to play and how this works. Add text here.
+                  To start, join a room and add in $10.00 USD to play a game. You will spawn as a Pacman, control using your keyboard arrow keys and eat the dots for money. If you manage to eat a large dot, you can eat other players to try to take their coins. If you win, you'll receive the entire game winnings pot.
                 </p>
               </div>  
               </div>
           </div>
         </div>
       </div>
-      {/* <Endscreen isActive={!isGameActive} score={score} onRestart={restartGame} /> */}
-      {/* add an endscreen based on the states of isGameActive */}
-      {/* <div className="mt-12 bg-gray-400 mx-20 p-6 rounded-lg">
-        <h1 className="text-3xl">
-          How to Play
-        </h1> 
-        <p className="text-lg mt-4">
-            To start, so and so and add more text here detailing how to play and how this works. Add text here.
-        </p> */}
     </div>
     </>
   );
