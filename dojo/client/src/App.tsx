@@ -9,6 +9,7 @@ import useModel from "./useModel.tsx";
 import { useSystemCalls } from "./useSystemCalls.ts";
 import World from "./World";
 
+import Navbar from "./components/Navbar";
 // import Endscreen from "./components/Endscreen";
 
 /**
@@ -135,6 +136,8 @@ function App({ sdk }: { sdk: SDK<Schema> }) {
   // const [score, setScore] = useState(0);
 
   return (
+    <>
+    <Navbar/>
     <div className="bg-black min-h-screen w-full p-4 sm:p-8">
       <div className="max-w-7xl mx-auto">
         <button
@@ -289,6 +292,7 @@ function App({ sdk }: { sdk: SDK<Schema> }) {
             To start, so and so and add more text here detailing how to play and how this works. Add text here.
         </p> */}
     </div>
+    </>
   );
 }
 
