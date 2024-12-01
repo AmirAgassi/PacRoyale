@@ -128,6 +128,9 @@ function App({ sdk }: { sdk: SDK<Schema> }) {
   const chompSound = new Audio("assets/pacman_chomp.wav");
   const beginningSound = new Audio("assets/pacman_beginning.wav");
   const extraPacSound = new Audio("assets/pacman_extrapac.wav");
+
+  const [isOpen, setIsOpen] = useState(false);
+
   // const [isGameActive, setIsGameActive] = useState(true);
   // const [score, setScore] = useState(0);
 
@@ -251,11 +254,40 @@ function App({ sdk }: { sdk: SDK<Schema> }) {
                 Clear Burners
               </button>
             </div>
+
+            {/* How to Play Instructions */}
+            <div className="mt-12 bg-gray-400 p-6 rounded-lg">
+              <h1
+                className="text-xl cursor-pointer flex justify-between items-center"
+                onClick={() => setIsOpen(!isOpen)}
+              >
+                How to Play
+                <span className={`transition-transform ${isOpen ? "rotate-180" : ""}`}>
+                  ▼
+                </span>
+              </h1>
+              <div
+                className={`overflow-hidden transition-all duration-300 ${
+                  isOpen ? "max-h-96" : "max-h-0"
+                }`}
+              >
+                <p className="text-lg mt-4">
+                  To start, do so-and-so and add more text here detailing how to play and how this works. Add text here.
+                </p>
+              </div>  
+              </div>
           </div>
         </div>
       </div>
       {/* <Endscreen isActive={!isGameActive} score={score} onRestart={restartGame} /> */}
       {/* add an endscreen based on the states of isGameActive */}
+      {/* <div className="mt-12 bg-gray-400 mx-20 p-6 rounded-lg">
+        <h1 className="text-3xl">
+          How to Play
+        </h1> 
+        <p className="text-lg mt-4">
+            To start, so and so and add more text here detailing how to play and how this works. Add text here.
+        </p> */}
     </div>
   );
 }
