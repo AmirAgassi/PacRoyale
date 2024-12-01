@@ -26,6 +26,15 @@ pub struct Position {
     pub vec: Vec2,
 }
 
+// Add this new model to track total players
+#[derive(Copy, Drop, Serde, Debug)]
+#[dojo::model]
+pub struct PlayerCount {
+    #[key]
+    pub world: felt252,  // Use a constant key
+    pub count: u32,
+}
+
 
 #[derive(Serde, Copy, Drop, Introspect, PartialEq, Debug)]
 pub enum Direction {

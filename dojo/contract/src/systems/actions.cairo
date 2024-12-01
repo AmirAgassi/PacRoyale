@@ -1,4 +1,4 @@
-use dojo_starter::models::{Direction, Position, Vec2};
+use dojo_starter::models::{Direction, Position, Vec2, PlayerCount};
 use dojo_starter::map::{is_walkable, MAP_WIDTH, MAP_HEIGHT};
 
 // define the interface
@@ -11,7 +11,7 @@ trait IActions<T> {
 // dojo decorator
 #[dojo::contract]
 pub mod actions {
-    use super::{IActions, Direction, Position, next_position};
+    use super::{IActions, Direction, Position, next_position, PlayerCount};
     use starknet::{ContractAddress, get_caller_address};
     use dojo_starter::models::{Vec2, Moves, DirectionsAvailable};
 
@@ -32,16 +32,37 @@ pub mod actions {
             // Get the default world.
             let mut world = self.world_default();
 
+            let world_key = 1; // Constant key for PlayerCount
+            let mut player_count: PlayerCount = world.read_model(world_key);
+
+            // Increment player count
+            player_count.count += 1;
+            if player_count.count > 4 {
+                player_count.count = 1;
+            }
+            
+            // Determine spawn position based on player number (0-based index)
+            let (spawn_x, spawn_y) = match player_count.count - 1 {
+                0 => (1, 1),     // Player 1: Top-left
+                1 => (21, 1),    // Player 2: Top-right
+                2 => (1, 21),    // Player 3: Bottom-left
+                3 => (21, 21),   // Player 4: Bottom-right
+                _ => panic_with_felt252('max players reached') // Optional: limit to 4 players
+            };
+
             // Get the address of the current caller, possibly the player's address.
             let player = get_caller_address();
+            
             // Retrieve the player's current position from the world.
             let position: Position = world.read_model(player);
 
             // Update the world state with the new data.
 
             // 1. Move the player's position 10 units in both the x and y direction.
+            // Create position at spawn point
             let new_position = Position {
-                player, vec: Vec2 { x: position.vec.x + 10, y: position.vec.y + 10 }
+                player,
+                vec: Vec2 { x: spawn_x, y: spawn_y }
             };
 
             // Write the new position to the world.
@@ -54,6 +75,8 @@ pub mod actions {
 
             // Write the new moves to the world.
             world.write_model(@moves);
+            world.write_model(@player_count);
+            world.write_model(@new_position);
         }
 
         // Implementation of the move function for the ContractState struct.

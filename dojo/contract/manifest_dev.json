@@ -1253,7 +1253,7 @@
   "contracts": [
     {
       "address": "0x1aac0d0befd489010ebd11092e4c3df787ad01287d9b8af337507e54cbd0b41",
-      "class_hash": "0x530fe4fb458770d63b54b555cbb42d257c44b9c55a75d9da849b1717d96504b",
+      "class_hash": "0xe29e030817595157146cf35383adff6cda119d6aad8f157e403cbb9e261b5",
       "abi": [
         {
           "type": "impl",
@@ -1498,6 +1498,12 @@
       "class_hash": "0x70edf8f3be0b118e78f856f3ea9ebb652cba3684abaf7f299bfa6f93bf907c9",
       "tag": "dojo_starter-Moves",
       "selector": "0x2a29373f1af8348bd366a990eb3a342ef2cbe5e85160539eaca3441a673f468"
+    },
+    {
+      "members": [],
+      "class_hash": "0x398677ff5d0d1179e13faea7c768d6b2ddbe92a1408ff6c1346ab6c100446f9",
+      "tag": "dojo_starter-PlayerCount",
+      "selector": "0x6668314f2aa7091fff836a8d87bb33bfae38014bed85b55a80af654d5e1733c"
     },
     {
       "members": [],
