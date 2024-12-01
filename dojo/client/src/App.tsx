@@ -257,7 +257,7 @@ function App({ sdk }: { sdk: SDK<Schema> }) {
 
         {/* Right side - World */}
         <div className="w-1/2 pl-4">
-          <div className="bg-gray-700 p-4 rounded-lg shadow-inner">
+          <div className="">
             <World grid={grid} />
           </div>
         </div>

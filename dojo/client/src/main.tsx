@@ -41,9 +41,8 @@ async function main() {
   createRoot(document.getElementById("root")!).render(
     <StrictMode>
       <DojoContextProvider burnerManager={await setupBurnerManager(dojoConfig)}>
-        <ChakraProvider>
+    
           <App sdk={sdk} />
-        </ChakraProvider>
       </DojoContextProvider>
     </StrictMode>
   );
