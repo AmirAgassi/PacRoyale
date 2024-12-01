@@ -118,23 +118,6 @@ function App({ sdk }: { sdk: SDK<Schema> }) {
 
   const [isOpen, setIsOpen] = useState(false);
 
-  const moveDirection = async (direction: "Up" | "Left" | "Right" | "Down") => {
-    // Play the sound for move action
-    chompSound.play();
-  
-    // Perform the move action
-    await client.actions.move({
-      account: account.account,
-      direction: { type: direction },
-    });
-    
-    // You can update the UI position here if needed (e.g., changing `x` and `y` values)
-    setMoves((prevMoves) => ({
-      ...prevMoves,
-      last_direction: direction,
-    }));
-  };
-
 // Function to handle arrow key presses
 const handleKeyPress = async (e: KeyboardEvent) => {
   // Prevent the default action (e.g., scrolling or moving the tab)
@@ -144,8 +127,8 @@ const handleKeyPress = async (e: KeyboardEvent) => {
   let direction: "Up" | "Left" | "Right" | "Down" | null = null;
   
   switch (e.key) {
-    case "ArrowUp":  
-    direction = "Up";
+    case "ArrowUp":
+      direction = "Up";
       break;
     case "ArrowLeft":
       direction = "Left";
