@@ -118,13 +118,15 @@ function App({ sdk }: { sdk: SDK<Schema> }) {
 
   const [isOpen, setIsOpen] = useState(false);
 
+  type Direction = "Up" | "Left" | "Right" | "Down";
+
 // Function to handle arrow key presses
 const handleKeyPress = async (e: KeyboardEvent) => {
   // Prevent the default action (e.g., scrolling or moving the tab)
   e.preventDefault();
 
   // Check which key was pressed
-  let direction: "Up" | "Left" | "Right" | "Down" | null = null;
+  let direction: Direction | null = null;
   
   switch (e.key) {
     case "ArrowUp":
