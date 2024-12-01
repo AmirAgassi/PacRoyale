@@ -118,6 +118,69 @@ function App({ sdk }: { sdk: SDK<Schema> }) {
 
   const [isOpen, setIsOpen] = useState(false);
 
+  const moveDirection = async (direction: "Up" | "Left" | "Right" | "Down") => {
+    // Play the sound for move action
+    chompSound.play();
+  
+    // Perform the move action
+    await client.actions.move({
+      account: account.account,
+      direction: { type: direction },
+    });
+    
+    // You can update the UI position here if needed (e.g., changing `x` and `y` values)
+    setMoves((prevMoves) => ({
+      ...prevMoves,
+      last_direction: direction,
+    }));
+  };
+
+// Function to handle arrow key presses
+const handleKeyPress = async (e: KeyboardEvent) => {
+  // Prevent the default action (e.g., scrolling or moving the tab)
+  e.preventDefault();
+
+  // Check which key was pressed
+  let direction: "Up" | "Left" | "Right" | "Down" | null = null;
+  
+  switch (e.key) {
+    case "ArrowUp":  
+    direction = "Up";
+      break;
+    case "ArrowLeft":
+      direction = "Left";
+      break;
+    case "ArrowRight":
+      direction = "Right";
+      break;
+    case "ArrowDown":
+      direction = "Down";
+      break;
+    default:
+      break;
+  }
+
+  if (direction) {
+    chompSound.play();
+    await client.actions.move({
+      account: account.account,
+      direction: { type: direction },
+    });
+  }
+};
+
+// Set up the event listener on mount and clean it up on unmount
+useEffect(() => {
+  // Adding the event listener for keydown
+  window.addEventListener("keydown", handleKeyPress);
+
+  // Cleanup the event listener on component unmount
+  return () => {
+    window.removeEventListener("keydown", handleKeyPress);
+  };
+}, []); // Empty dependency array means this effect runs once on mount and cleanup on unmount
+
+
   return (
     <>
     <div className="bg-black min-h-screen w-full p-4 sm:p-8">
