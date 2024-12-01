@@ -10,6 +10,8 @@ import { useSystemCalls } from "./useSystemCalls.ts";
 import World from "./World";
 import useBoard from "./Board";
 
+// import Endscreen from "./components/Endscreen";
+
 /**
  * Global store for managing Dojo game state.
  */
@@ -114,7 +116,60 @@ function App({ sdk }: { sdk: SDK<Schema> }) {
   const beginningSound = new Audio("assets/pacman_beginning.wav");
   const extraPacSound = new Audio("assets/pacman_extrapac.wav");
 
+  const [isOpen, setIsOpen] = useState(false);
+
+  type Direction = "Up" | "Left" | "Right" | "Down";
+
+// Function to handle arrow key presses
+const handleKeyPress = async (e: KeyboardEvent) => {
+  // Prevent the default action (e.g., scrolling or moving the tab)
+  e.preventDefault();
+
+  // Check which key was pressed
+  let direction: Direction | null = null;
+  
+  switch (e.key) {
+    case "ArrowUp":
+      direction = "Up";
+      break;
+    case "ArrowLeft":
+      direction = "Left";
+      break;
+    case "ArrowRight":
+      direction = "Right";
+      break;
+    case "ArrowDown":
+      direction = "Down";
+      break;
+    default:
+      break;
+  }
+
+  if (direction) {
+    console.log("Direction triggered:", direction);
+    console.log("Account:", account.account);
+    chompSound.play();
+    await client.actions.move({
+      account: account.account,
+      direction: { type: direction },
+    });
+  }
+};
+
+// Set up the event listener on mount and clean it up on unmount
+useEffect(() => {
+  // Adding the event listener for keydown
+  window.addEventListener("keydown", handleKeyPress);
+
+  // Cleanup the event listener on component unmount
+  return () => {
+    window.removeEventListener("keydown", handleKeyPress);
+  };
+}, []); // Empty dependency array means this effect runs once on mount and cleanup on unmount
+
+
   return (
+    <>
     <div className="bg-black min-h-screen w-full p-4 sm:p-8">
       <div className="max-w-7xl mx-auto">
         <div className="flex items-center justify-between mb-6">
@@ -143,8 +198,6 @@ function App({ sdk }: { sdk: SDK<Schema> }) {
           </div>
           <div className="flex-1 space-y-6">
             <div className="bg-gray-700 p-4 rounded-lg shadow-inner">
-              <div className="grid grid-cols-3 gap-2 w-full h-48">
-                <div className="col-start-2">
                   <button
                     className="h-12 w-12 bg-gray-600 rounded-full shadow-md active:shadow-inner active:bg-gray-500 focus:outline-none text-2xl font-bold text-gray-200"
                     onClick={async () => {
@@ -155,16 +208,6 @@ function App({ sdk }: { sdk: SDK<Schema> }) {
                     +
                   </button>
                 </div>
-                <div className="col-span-3 text-center text-base text-white">
-                  Moves Left: {moves ? `${moves.remaining}` : "Need to Spawn"}
-                </div>
-                <div className="col-span-3 text-center text-base text-white">
-                  {position
-                    ? `x: ${position?.vec?.x}, y: ${position?.vec?.y}`
-                    : "Need to Spawn"}
-                </div>
-                <div className="col-span-3 text-center text-base text-white">
-                  {moves && moves.last_direction}
                 </div>
               </div>
             </div>
@@ -202,6 +245,8 @@ function App({ sdk }: { sdk: SDK<Schema> }) {
                         account: account.account,
                         direction: { type: direction },
                       });
+                      console.log("Direction triggered:", direction);
+    console.log("Account:", account.account);
                     }}
                   >
                     {label}
@@ -239,10 +284,33 @@ function App({ sdk }: { sdk: SDK<Schema> }) {
                 Clear Burners
               </button>
             </div>
+
+            {/* How to Play Instructions */}
+            <div className="mt-12 bg-gray-400 p-6 rounded-lg">
+              <h1
+                className="text-xl cursor-pointer flex justify-between items-center"
+                onClick={() => setIsOpen(!isOpen)}
+              >
+                How to Play
+                <span className={`transition-transform ${isOpen ? "rotate-180" : ""}`}>
+                  ▼
+                </span>
+              </h1>
+              <div
+                className={`overflow-hidden transition-all duration-300 ${
+                  isOpen ? "max-h-96" : "max-h-0"
+                }`}
+              >
+                <p className="text-lg mt-4">
+                  To start, join a room and add in $10.00 USD to play a game. You will spawn as a Pacman, control using your keyboard arrow keys and eat the dots for money. If you manage to eat a large dot, you can eat other players to try to take their coins. If you win, you'll receive the entire game winnings pot.
+                </p>
+              </div>  
+              </div>
           </div>
         </div>
       </div>
     </div>
+    </>
   );
 }
 
