@@ -10,9 +10,6 @@ import { dojoConfig } from "../dojoConfig.ts";
 import { DojoContextProvider } from "./DojoContext.tsx";
 import { setupBurnerManager } from "@dojoengine/create-burner";
 
-// 1. import `ChakraProvider` component
-import { ChakraProvider } from "@chakra-ui/react";
-
 /**
  * Initializes and bootstraps the Dojo application.
  * Sets up the SDK, burner manager, and renders the root component.
