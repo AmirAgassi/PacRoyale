@@ -121,7 +121,12 @@ function App({ sdk }: { sdk: SDK<Schema> }) {
         >
           {isPlaying ? "Pause" : "Play"}
         </button>
-
+        <button
+          className="mb-6 ml-4 px-6 py-2 bg-yellow-400 rounded-full shadow-md active:shadow-inner active:bg-yellow-500 focus:outline-none text-xl font-bold text-black"
+          onClick={() => account?.create()}
+        >
+          {account?.isDeploying ? "Deploying Burner..." : "Create Burner"}
+        </button>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
           <div className="bg-gray-700 p-4 rounded-lg shadow-inner">
             <div className="grid grid-cols-3 gap-2 w-full h-48">
@@ -189,6 +194,36 @@ function App({ sdk }: { sdk: SDK<Schema> }) {
                 </button>
               ))}
             </div>
+          </div>
+
+          <div className="bg-gray-800 shadow-md rounded-lg p-4 sm:p-6 mb-6 w-full max-w-md">
+            <div className="text-lg sm:text-xl font-semibold mb-4 text-white">{`Burners Deployed: ${account.count}`}</div>
+            <div className="mb-4">
+              <label
+                htmlFor="signer-select"
+                className="block text-sm font-medium text-gray-300 mb-2"
+              >
+                Select Signer:
+              </label>
+              <select
+                id="signer-select"
+                className="w-full px-3 py-2 text-base text-gray-200 bg-gray-700 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={account ? account.account.address : ""}
+                onChange={(e) => account.select(e.target.value)}
+              >
+                {account?.list().map((account, index) => (
+                  <option value={account.address} key={index}>
+                    {account.address}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <button
+              className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 text-base rounded transition duration-300 ease-in-out"
+              onClick={() => account.clear()}
+            >
+              Clear Burners
+            </button>
           </div>
         </div>
       </div>
