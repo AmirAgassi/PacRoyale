@@ -38,14 +38,16 @@ function App({ sdk }: { sdk: SDK<Schema> }) {
   // Create a 20x20 grid with borders (1s) and inner cells (0s)
   const [grid] = useState(() => {
     const size = 20;
-    const newGrid = Array(size).fill(0).map(() => Array(size).fill(0));
-    
+    const newGrid = Array(size)
+      .fill(0)
+      .map(() => Array(size).fill(0));
+
     // Fill top and bottom borders
     for (let i = 0; i < size; i++) {
-      newGrid[0][i] = 1;  // Top border
-      newGrid[size-1][i] = 1;  // Bottom border
-      newGrid[i][0] = 1;  // Left border
-      newGrid[i][size-1] = 1;  // Right border
+      newGrid[0][i] = 1; // Top border
+      newGrid[size - 1][i] = 1; // Bottom border
+      newGrid[i][0] = 1; // Left border
+      newGrid[i][size - 1] = 1; // Right border
     }
     return newGrid;
   });
@@ -119,146 +121,127 @@ function App({ sdk }: { sdk: SDK<Schema> }) {
 
   const moves = useModel(entityId, Models.Moves);
   const position = useModel(entityId, Models.Position);
-  useEffect(() => {
-    let unsubscribe: (() => void) | undefined;
 
-    const subscribe = async () => {
-      const subscription = await sdk.subscribeEntityQuery({
-        query: new QueryBuilder<Schema>()
-          .namespace("dojo_starter", (n) =>
-            n
-              .entity("Moves", (e) =>
-                e.eq("player", addAddressPadding(account.account.address))
-              )
-              .entity("Position", (e) =>
-                e.is("player", addAddressPadding(account.account.address))
-              )
-          )
-          .build(),
-        callback: (response) => {
-          if (response.error) {
-            console.error("Error setting up entity sync:", response.error);
-          } else if (response.data && response.data[0].entityId !== "0x0") {
-            console.log("subscribed", response.data[0]);
-            state.updateEntity(response.data[0]);
-          }
-        },
-      });
+  const [isPlaying, setIsPlaying] = useState(false);
+  const chompSound = new Audio("assets/pacman_chomp.wav");
+  const beginningSound = new Audio("assets/pacman_beginning.wav");
+  const extraPacSound = new Audio("assets/pacman_extrapac.wav");
 
-      unsubscribe = () => subscription.cancel();
-    };
-
-    subscribe();
-
-    return () => {
-      if (unsubscribe) {
-        unsubscribe();
-      }
-    };
-  }, [sdk, account?.account.address]);
-  useEffect(() => {
-    const fetchEntities = async () => {
-      try {
-        await sdk.getEntities({
-          query: new QueryBuilder<Schema>()
-            .namespace("dojo_starter", (n) =>
-              n.entity("Moves", (e) =>
-                e.eq("player", addAddressPadding(account.account.address))
-              )
-            )
-            .build(),
-          callback: (resp) => {
-            if (resp.error) {
-              console.error("resp.error.message:", resp.error.message);
-              return;
-            }
-            if (resp.data) {
-              state.setEntities(resp.data);
-            }
-          },
-        });
-      } catch (error) {
-        console.error("Error querying entities:", error);
-      }
-    };
-
-    fetchEntities();
-  }, [sdk, account?.account.address]);
   return (
     <div className="bg-black min-h-screen w-full p-4 sm:p-8">
-      <div className="max-w-7xl mx-auto flex">
-        {/* Left side - Controls */}
-        <div className="w-1/2 pr-4">
-          <div className="grid grid-cols-1 gap-6">
-            <div className="bg-gray-700 p-4 rounded-lg shadow-inner">
-              <div className="grid grid-cols-3 gap-2 w-full h-48">
-                <div className="col-start-2">
-                  <button
-                    className="h-12 w-12 bg-gray-600 rounded-full shadow-md active:shadow-inner active:bg-gray-500 focus:outline-none text-2xl font-bold text-gray-200"
-                    onClick={async () => {
-                      await spawn();
-                    }}
-                  >
-                    +
-                  </button>
-                </div>
-                <div className="col-span-3 text-center text-base text-white">
-                  Moves Left: {moves ? `${moves.remaining}` : "Need to Spawn"}
-                </div>
-                <div className="col-span-3 text-center text-base text-white">
-                  {position
-                    ? `x: ${position?.vec?.x}, y: ${position?.vec?.y}`
-                    : "Need to Spawn"}
-                </div>
+      <div className="max-w-7xl mx-auto">
+        <button
+          className="mb-6 px-6 py-2 bg-yellow-400 rounded-full shadow-md active:shadow-inner active:bg-yellow-500 focus:outline-none text-xl font-bold text-black"
+          onClick={() => {
+            setIsPlaying(!isPlaying);
+            beginningSound.play();
+          }}
+        >
+          {isPlaying ? "Pause" : "Play"}
+        </button>
+        <button
+          className="mb-6 ml-4 px-6 py-2 bg-yellow-400 rounded-full shadow-md active:shadow-inner active:bg-yellow-500 focus:outline-none text-xl font-bold text-black"
+          onClick={() => account?.create()}
+        >
+          {account?.isDeploying ? "Deploying Burner..." : "Create Burner"}
+        </button>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
+          <div className="bg-gray-700 p-4 rounded-lg shadow-inner">
+            <div className="grid grid-cols-3 gap-2 w-full h-48">
+              <div className="col-start-2">
+                <button
+                  className="h-12 w-12 bg-gray-600 rounded-full shadow-md active:shadow-inner active:bg-gray-500 focus:outline-none text-2xl font-bold text-gray-200"
+                  onClick={async () => {
+                    extraPacSound.play();
+                    await spawn();
+                  }}
+                >
+                  +
+                </button>
               </div>
-            </div>
-
-            <div className="bg-gray-700 p-4 rounded-lg shadow-inner">
-              <div className="grid grid-cols-3 gap-2 w-full h-48">
-                {[
-                  {
-                    direction: "Up" as const,
-                    label: "↑",
-                    col: "col-start-2",
-                  },
-                  {
-                    direction: "Left" as const,
-                    label: "←",
-                    col: "col-start-1",
-                  },
-                  {
-                    direction: "Right" as const,
-                    label: "→",
-                    col: "col-start-3",
-                  },
-                  {
-                    direction: "Down" as const,
-                    label: "↓",
-                    col: "col-start-2",
-                  },
-                ].map(({ direction, label, col }) => (
-                  <button
-                    className={`${col} h-12 w-12 bg-gray-600 rounded-full shadow-md active:shadow-inner active:bg-gray-500 focus:outline-none text-2xl font-bold text-gray-200`}
-                    key={direction}
-                    onClick={async () => {
-                      await client.actions.move({
-                        account: account.account,
-                        direction: { type: direction },
-                      });
-                    }}
-                  >
-                    {label}
-                  </button>
-                ))}
+              <div className="col-span-3 text-center text-base text-white">
+                Moves Left: {moves ? `${moves.remaining}` : "Need to Spawn"}
+              </div>
+              <div className="col-span-3 text-center text-base text-white">
+                {position
+                  ? `x: ${position?.vec?.x}, y: ${position?.vec?.y}`
+                  : "Need to Spawn"}
+              </div>
+              <div className="col-span-3 text-center text-base text-white">
+                {moves && moves.last_direction}
               </div>
             </div>
           </div>
-        </div>
 
-        {/* Right side - World */}
-        <div className="w-1/2 pl-4">
-          <div className="">
-            <World grid={grid} />
+          <div className="bg-gray-700 p-4 rounded-lg shadow-inner">
+            <div className="grid grid-cols-3 gap-2 w-full h-48">
+              {[
+                {
+                  direction: "Up" as const,
+                  label: "↑",
+                  col: "col-start-2",
+                },
+                {
+                  direction: "Left" as const,
+                  label: "←",
+                  col: "col-start-1",
+                },
+                {
+                  direction: "Right" as const,
+                  label: "→",
+                  col: "col-start-3",
+                },
+                {
+                  direction: "Down" as const,
+                  label: "↓",
+                  col: "col-start-2",
+                },
+              ].map(({ direction, label, col }) => (
+                <button
+                  className={`${col} h-12 w-12 bg-gray-600 rounded-full shadow-md active:shadow-inner active:bg-gray-500 focus:outline-none text-2xl font-bold text-gray-200`}
+                  key={direction}
+                  onClick={async () => {
+                    chompSound.play();
+                    await client.actions.move({
+                      account: account.account,
+                      direction: { type: direction },
+                    });
+                  }}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="bg-gray-800 shadow-md rounded-lg p-4 sm:p-6 mb-6 w-full max-w-md">
+            <div className="text-lg sm:text-xl font-semibold mb-4 text-white">{`Burners Deployed: ${account.count}`}</div>
+            <div className="mb-4">
+              <label
+                htmlFor="signer-select"
+                className="block text-sm font-medium text-gray-300 mb-2"
+              >
+                Select Signer:
+              </label>
+              <select
+                id="signer-select"
+                className="w-full px-3 py-2 text-base text-gray-200 bg-gray-700 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={account ? account.account.address : ""}
+                onChange={(e) => account.select(e.target.value)}
+              >
+                {account?.list().map((account, index) => (
+                  <option value={account.address} key={index}>
+                    {account.address}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <button
+              className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 text-base rounded transition duration-300 ease-in-out"
+              onClick={() => account.clear()}
+            >
+              Clear Burners
+            </button>
           </div>
         </div>
       </div>
