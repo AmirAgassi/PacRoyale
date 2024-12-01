@@ -9,6 +9,8 @@ import useModel from "./useModel.tsx";
 import { useSystemCalls } from "./useSystemCalls.ts";
 import World from "./World";
 
+import Endscreen from "./components/Endscreen";
+
 /**
  * Global store for managing Dojo game state.
  */
@@ -126,6 +128,8 @@ function App({ sdk }: { sdk: SDK<Schema> }) {
   const chompSound = new Audio("assets/pacman_chomp.wav");
   const beginningSound = new Audio("assets/pacman_beginning.wav");
   const extraPacSound = new Audio("assets/pacman_extrapac.wav");
+  // const [isGameActive, setIsGameActive] = useState(true);
+  // const [score, setScore] = useState(0);
 
   return (
     <div className="bg-black min-h-screen w-full p-4 sm:p-8">
@@ -250,6 +254,8 @@ function App({ sdk }: { sdk: SDK<Schema> }) {
           </div>
         </div>
       </div>
+      {/* <Endscreen isActive={!isGameActive} score={score} onRestart={restartGame} /> */}
+      {/* add an endscreen based on the states of isGameActive */}
     </div>
   );
 }
