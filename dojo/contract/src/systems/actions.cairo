@@ -1,4 +1,5 @@
-use dojo_starter::models::{Direction, Position};
+use dojo_starter::models::{Direction, Position, Vec2};
+use dojo_starter::map::{is_walkable, MAP_WIDTH, MAP_HEIGHT};
 
 // define the interface
 #[starknet::interface]
@@ -57,33 +58,34 @@ pub mod actions {
 
         // Implementation of the move function for the ContractState struct.
         fn move(ref self: ContractState, direction: Direction) {
-            // Get the address of the current caller, possibly the player's address.
-
             let mut world = self.world_default();
-
             let player = get_caller_address();
-
-            // Retrieve the player's current position and moves data from the world.
+            
             let position: Position = world.read_model(player);
             let mut moves: Moves = world.read_model(player);
 
-            // Deduct one from the player's remaining moves.
-            moves.remaining -= 1;
+            // ensure player has moves remaining
+            assert(moves.remaining > 0, 'no moves remaining');
+            assert(moves.can_move, 'cannot move');
 
-            // Update the last direction the player moved in.
-            moves.last_direction = direction;
-
-            // Calculate the player's next position based on the provided direction.
-            let next = next_position(position, direction);
-
-            // Write the new position to the world.
-            world.write_model(@next);
-
-            // Write the new moves to the world.
-            world.write_model(@moves);
-
-            // Emit an event to the world to notify about the player's move.
-            world.emit_event(@Moved { player, direction });
+            // Calculate next position with wall detection
+            match next_position(position, direction) {
+                Option::Some(new_position) => {
+                    // Valid move, update position
+                    moves.remaining -= 1;
+                    moves.last_direction = direction;
+                    
+                    world.write_model(@new_position);
+                    world.write_model(@moves);
+                    
+                    let event = Moved { player, direction };
+                    world.emit_event(@event);
+                },
+                Option::None => {
+                    // Invalid move (wall collision), don't update anything
+                    return;
+                }
+            }
         }
     }
 
@@ -98,13 +100,36 @@ pub mod actions {
 }
 
 // Define function like this:
-fn next_position(mut position: Position, direction: Direction) -> Position {
+fn next_position(position: Position, direction: Direction) -> Option<Position> {
+    // calculate the next position
+    let mut next = position;
     match direction {
-        Direction::None => { return position; },
-        Direction::Left => { position.vec.x -= 1; },
-        Direction::Right => { position.vec.x += 1; },
-        Direction::Up => { position.vec.y -= 1; },
-        Direction::Down => { position.vec.y += 1; },
+        Direction::None => { return Option::Some(position); },
+        Direction::Left => { 
+            if next.vec.x == 0 { return Option::None; }
+            next.vec.x -= 1; 
+        },
+        Direction::Right => { 
+            next.vec.x += 1; 
+        },
+        Direction::Up => { 
+            if next.vec.y == 0 { return Option::None; }
+            next.vec.y -= 1; 
+        },
+        Direction::Down => { 
+            next.vec.y += 1; 
+        },
     };
-    position
+
+    // check boundaries and walls
+    if next.vec.x >= MAP_WIDTH || next.vec.y >= MAP_HEIGHT {
+        return Option::None;
+    }
+
+    // check if the next position is walkable
+    if !is_walkable(next.vec.x, next.vec.y) {
+        return Option::None;
+    }
+
+    Option::Some(next)
 }
