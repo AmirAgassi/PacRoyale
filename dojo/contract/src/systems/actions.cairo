@@ -14,6 +14,7 @@ pub mod actions {
     use super::{IActions, Direction, Position, next_position};
     use starknet::{ContractAddress, get_caller_address};
     use dojo_starter::models::{Vec2, Moves, DirectionsAvailable};
+    use dojo_starter::map::is_walkable;
 
     use dojo::model::{ModelStorage, ModelValueStorage};
     use dojo::event::EventStorage;
@@ -29,30 +30,34 @@ pub mod actions {
     #[abi(embed_v0)]
     impl ActionsImpl of IActions<ContractState> {
         fn spawn(ref self: ContractState) {
-            // Get the default world.
+            // get the default world
             let mut world = self.world_default();
 
-            // Get the address of the current caller, possibly the player's address.
+            // get the address of the current caller
             let player = get_caller_address();
-            // Retrieve the player's current position from the world.
-            let position: Position = world.read_model(player);
-
-            // Update the world state with the new data.
-
-            // 1. Move the player's position 10 units in both the x and y direction.
+            
+            // find a valid spawn position
+            // starting from (1,1) which is typically a safe position in pac-man style maps
             let new_position = Position {
-                player, vec: Vec2 { x: position.vec.x + 10, y: position.vec.y + 10 }
+                player,
+                vec: Vec2 { x: 1, y: 1 }  // start at (1,1) which is typically walkable
             };
 
-            // Write the new position to the world.
+            // verify the spawn position is valid
+            assert(is_walkable(new_position.vec.x, new_position.vec.y), 'invalid spawn position');
+
+            // write the new position to the world
             world.write_model(@new_position);
 
-            // 2. Set the player's remaining moves to 100.
+            // set the player's remaining moves to 100
             let moves = Moves {
-                player, remaining: 100, last_direction: Direction::None(()), can_move: true
+                player,
+                remaining: 100,
+                last_direction: Direction::None(()),
+                can_move: true
             };
 
-            // Write the new moves to the world.
+            // write the new moves to the world
             world.write_model(@moves);
         }
 
