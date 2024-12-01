@@ -8,7 +8,7 @@ import { useDojo } from "./useDojo.tsx";
 import useModel from "./useModel.tsx";
 import { useSystemCalls } from "./useSystemCalls.ts";
 import World from "./World";
-import useBoard from './Board';
+import useBoard from "./Board";
 
 /**
  * Global store for managing Dojo game state.
@@ -117,21 +117,26 @@ function App({ sdk }: { sdk: SDK<Schema> }) {
   return (
     <div className="bg-black min-h-screen w-full p-4 sm:p-8">
       <div className="max-w-7xl mx-auto">
-        <button
-          className="mb-6 px-6 py-2 bg-yellow-400 rounded-full shadow-md active:shadow-inner active:bg-yellow-500 focus:outline-none text-xl font-bold text-black"
-          onClick={() => {
-            setIsPlaying(!isPlaying);
-            beginningSound.play();
-          }}
-        >
-          {isPlaying ? "Pause" : "Play"}
-        </button>
-        <button
-          className="mb-6 ml-4 px-6 py-2 bg-yellow-400 rounded-full shadow-md active:shadow-inner active:bg-yellow-500 focus:outline-none text-xl font-bold text-black"
-          onClick={() => account?.create()}
-        >
-          {account?.isDeploying ? "Deploying Burner..." : "Create Burner"}
-        </button>
+        <div className="flex items-center justify-between mb-6">
+          <img src="/assets/logo.png" alt="Game Logo" className="h-12" />
+          <div>
+            <button
+              className="px-6 py-2 bg-yellow-400 rounded-full shadow-md active:shadow-inner active:bg-yellow-500 focus:outline-none text-xl font-bold text-black"
+              onClick={() => {
+                setIsPlaying(!isPlaying);
+                beginningSound.play();
+              }}
+            >
+              {isPlaying ? "Pause" : "Play"}
+            </button>
+            <button
+              className="ml-4 px-6 py-2 bg-yellow-400 rounded-full shadow-md active:shadow-inner active:bg-yellow-500 focus:outline-none text-xl font-bold text-black"
+              onClick={() => account?.create()}
+            >
+              {account?.isDeploying ? "Deploying Burner..." : "Create Burner"}
+            </button>
+          </div>
+        </div>
         <div className="flex flex-col md:flex-row gap-6">
           <div className="flex-1">
             <World grid={grid} position={position} />
