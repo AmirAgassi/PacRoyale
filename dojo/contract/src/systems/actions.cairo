@@ -1,18 +1,20 @@
-use dojo_starter::models::{Direction, Position};
+use dojo_starter::models::{Direction, Position, GameState, GameStatus};
 
-// define the interface
+// update the interface
 #[starknet::interface]
 trait IActions<T> {
     fn spawn(ref self: T);
     fn move(ref self: T, direction: Direction);
+    fn init_game(ref self: T, max_players: u32);
 }
 
 // dojo decorator
 #[dojo::contract]
 pub mod actions {
-    use super::{IActions, Direction, Position, next_position};
+    use super::{IActions, Direction, Position, GameState, GameStatus};
     use starknet::{ContractAddress, get_caller_address};
-    use dojo_starter::models::{Vec2, Moves, DirectionsAvailable};
+    use dojo_starter::models::{Vec2, Moves};
+    use dojo::world::{IWorldDispatcher, IWorldDispatcherTrait};
 
     use dojo::model::{ModelStorage, ModelValueStorage};
     use dojo::event::EventStorage;
@@ -85,6 +87,21 @@ pub mod actions {
             // Emit an event to the world to notify about the player's move.
             world.emit_event(@Moved { player, direction });
         }
+
+        fn init_game(ref self: ContractState, max_players: u32) {
+            // Get the default world
+            let mut world = self.world_default();
+            
+            // Create a new game with ID 1 (for now just supporting single game)
+            world.write_model(
+                @GameState {
+                    game_id: 1, 
+                    status: GameStatus::Lobby,
+                    player_count: 0,
+                    max_players: max_players
+                }
+            );
+        }
     }
 
     #[generate_trait]
@@ -95,16 +112,29 @@ pub mod actions {
             self.world(@"dojo_starter")
         }
     }
-}
 
-// Define function like this:
-fn next_position(mut position: Position, direction: Direction) -> Position {
-    match direction {
-        Direction::None => { return position; },
-        Direction::Left => { position.vec.x -= 1; },
-        Direction::Right => { position.vec.x += 1; },
-        Direction::Up => { position.vec.y -= 1; },
-        Direction::Down => { position.vec.y += 1; },
-    };
-    position
+    // Helper function for move
+    fn next_position(position: Position, direction: Direction) -> Position {
+        let mut new_position = position;
+        match direction {
+            Direction::Left => {
+                if position.vec.x > 0 {
+                    new_position.vec.x -= 1;
+                }
+            },
+            Direction::Right => {
+                new_position.vec.x += 1;
+            },
+            Direction::Up => {
+                if position.vec.y > 0 {
+                    new_position.vec.y -= 1;
+                }
+            },
+            Direction::Down => {
+                new_position.vec.y += 1;
+            },
+            Direction::None => {},
+        };
+        new_position
+    }
 }

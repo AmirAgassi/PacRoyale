@@ -86,3 +86,30 @@ mod tests {
         assert(position.is_equal(Vec2 { x: 420, y: 0 }), 'not equal');
     }
 }
+
+#[derive(Copy, Drop, Serde, Debug)]
+#[dojo::model]
+pub struct GameState {
+    #[key]
+    pub game_id: u32,
+    pub status: GameStatus,
+    pub player_count: u32,
+    pub max_players: u32,
+}
+
+#[derive(Serde, Copy, Drop, Introspect, PartialEq, Debug)]
+pub enum GameStatus {
+    Lobby,
+    Playing,
+    Finished,
+}
+
+impl GameStatusIntoFelt252 of Into<GameStatus, felt252> {
+    fn into(self: GameStatus) -> felt252 {
+        match self {
+            GameStatus::Lobby => 0,
+            GameStatus::Playing => 1,
+            GameStatus::Finished => 2,
+        }
+    }
+}

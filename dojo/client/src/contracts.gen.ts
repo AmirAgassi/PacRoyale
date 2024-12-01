@@ -51,9 +51,27 @@ export function client(provider: DojoProvider) {
             }
         };
 
+        const init_game = async (props: { account: Account; maxPlayers: number }) => {
+            try {
+                return await provider.execute(
+                    props.account,
+                    {
+                        contractName: contract_name,
+                        entrypoint: "init_game",
+                        calldata: [props.maxPlayers],
+                    },
+                    "dojo_starter"
+                );
+            } catch (error) {
+                console.error("Error executing init_game:", error);
+                throw error;
+            }
+        };
+
         return {
             spawn,
             move,
+            init_game,
         };
     }
 

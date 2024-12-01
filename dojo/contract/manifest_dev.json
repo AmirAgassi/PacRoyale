@@ -1253,7 +1253,7 @@
   "contracts": [
     {
       "address": "0x1aac0d0befd489010ebd11092e4c3df787ad01287d9b8af337507e54cbd0b41",
-      "class_hash": "0x3f87eccb39c9dc7bb70d372350f4360ae1ff9da43bd72c89a96e336402a569b",
+      "class_hash": "0x7a374ccff967063f5e211cc007e1c908220e3acf3f7aae1f3725dfc7d4b1c1d",
       "abi": [
         {
           "type": "impl",
@@ -1354,6 +1354,18 @@
                 {
                   "name": "direction",
                   "type": "dojo_starter::models::Direction"
+                }
+              ],
+              "outputs": [],
+              "state_mutability": "external"
+            },
+            {
+              "type": "function",
+              "name": "init_game",
+              "inputs": [
+                {
+                  "name": "max_players",
+                  "type": "core::integer::u32"
                 }
               ],
               "outputs": [],
@@ -1482,6 +1494,7 @@
       "systems": [
         "spawn",
         "move",
+        "init_game",
         "upgrade"
       ]
     }
@@ -1492,6 +1505,12 @@
       "class_hash": "0x7deb48ccf95cc441a0489cfefdae54aeb6f8ec462ba13ff25e23f080e66cc2f",
       "tag": "dojo_starter-DirectionsAvailable",
       "selector": "0x77844f1facb51e60e546a9832d56c6bd04fa23be4fd5b57290caae5e9a3c1e4"
+    },
+    {
+      "members": [],
+      "class_hash": "0x31340c0bb72b5a4ca5bd78f4dbbdc9078234dbdf0898dcd0d6e7fef0746d914",
+      "tag": "dojo_starter-GameState",
+      "selector": "0x1523540555f6d4c8cc861f3fbef752e2b90216e6ec060f49a13abc2dcbcc360"
     },
     {
       "members": [],

@@ -72,7 +72,46 @@ export const useSystemCalls = () => {
         }
     };
 
+    const initGame = async (maxPlayers: number) => {
+        // Generate a unique transaction ID
+        const transactionId = uuidv4();
+        const gameEntityId = 1n; // We're using 1 as the game ID
+
+        // Apply optimistic update
+        state.applyOptimisticUpdate(transactionId, (draft) => {
+            if (!draft.entities[gameEntityId]) {
+                draft.entities[gameEntityId] = { models: { dojo_starter: {} } };
+            }
+            draft.entities[gameEntityId].models.dojo_starter.GameState = {
+                game_id: 1,
+                status: 0, // GameStatus.Lobby
+                player_count: 0,
+                max_players: maxPlayers
+            };
+        });
+
+        try {
+            console.log("Initializing game with max players:", maxPlayers);
+            await client.actions.init_game({ 
+                account: account,
+                maxPlayers 
+            });
+
+            // Wait for the entity to be updated
+            await state.waitForEntityChange(gameEntityId, (entity) => {
+                return entity?.models?.dojo_starter?.GameState?.max_players === maxPlayers;
+            });
+        } catch (error) {
+            state.revertOptimisticUpdate(transactionId);
+            console.error("Error initializing game:", error);
+            throw error;
+        } finally {
+            state.confirmTransaction(transactionId);
+        }
+    };
+
     return {
         spawn,
+        initGame
     };
 };

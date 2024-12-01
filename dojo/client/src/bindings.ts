@@ -60,6 +60,31 @@ interface Vec2 {
 }
 
 /**
+ * Enum representing possible game statuses.
+ */
+enum GameStatus {
+    Lobby = "0",
+    Playing = "1",
+    Finished = "2"
+}
+
+/**
+ * Interface representing the game state.
+ */
+interface GameState {
+    /** Order of fields in the model */
+    fieldOrder: string[];
+    /** Game identifier */
+    game_id: number;
+    /** Game status */
+    status: GameStatus;
+    /** Number of players */
+    player_count: number;
+    /** Maximum number of players */
+    max_players: number;
+}
+
+/**
  * Type representing the complete schema of game models.
  */
 type Schema = {
@@ -67,6 +92,7 @@ type Schema = {
         Moves: Moves;
         DirectionsAvailable: DirectionsAvailable;
         Position: Position;
+        GameState: GameState;
     };
 };
 
@@ -77,6 +103,7 @@ enum Models {
     Moves = "dojo_starter-Moves",
     DirectionsAvailable = "dojo_starter-DirectionsAvailable",
     Position = "dojo_starter-Position",
+    GameState = "dojo_starter-GameState"
 }
 
 const schema: Schema = {
@@ -98,8 +125,15 @@ const schema: Schema = {
             player: "",
             vec: { x: 0, y: 0 },
         },
+        GameState: {
+            fieldOrder: ["game_id", "status", "player_count", "max_players"],
+            game_id: 0,
+            status: GameStatus.Lobby,
+            player_count: 0,
+            max_players: 4
+        },
     },
 };
 
 export type { Schema, Moves, DirectionsAvailable, Position, Vec2 };
-export { Direction, schema, Models };
+export { Direction, schema, Models, GameStatus };
