@@ -9,7 +9,7 @@ import useModel from "./useModel.tsx";
 import { useSystemCalls } from "./useSystemCalls.ts";
 import World from "./World";
 
-import Endscreen from "./components/Endscreen";
+// import Endscreen from "./components/Endscreen";
 
 /**
  * Global store for managing Dojo game state.
