@@ -8,6 +8,7 @@ import { useDojo } from "./useDojo.tsx";
 import useModel from "./useModel.tsx";
 import { useSystemCalls } from "./useSystemCalls.ts";
 import World from "./World";
+import useBoard from './Board';
 
 /**
  * Global store for managing Dojo game state.
@@ -35,22 +36,8 @@ function App({ sdk }: { sdk: SDK<Schema> }) {
     [account?.account.address]
   );
 
-  // Create a 20x20 grid with borders (1s) and inner cells (0s)
-  const [grid] = useState(() => {
-    const size = 20;
-    const newGrid = Array(size)
-      .fill(0)
-      .map(() => Array(size).fill(0));
-
-    // Fill top and bottom borders
-    for (let i = 0; i < size; i++) {
-      newGrid[0][i] = 1; // Top border
-      newGrid[size - 1][i] = 1; // Bottom border
-      newGrid[i][0] = 1; // Left border
-      newGrid[i][size - 1] = 1; // Right border
-    }
-    return newGrid;
-  });
+  // Replace the grid useState with useBoard hook
+  const grid = useBoard();
 
   useEffect(() => {
     let unsubscribe: (() => void) | undefined;
