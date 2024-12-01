@@ -125,16 +125,16 @@ function App({ sdk }: { sdk: SDK<Schema> }) {
     return (
         <div className="bg-black min-h-screen w-full p-4 sm:p-8">
             <div className="max-w-7xl mx-auto">
-                <button
+                {/* <button
                     className="mb-4 px-4 py-2 bg-blue-600 text-white text-sm sm:text-base rounded-md hover:bg-blue-700 transition-colors duration-300"
                     onClick={() => account?.create()}
                 >
                     {account?.isDeploying
                         ? "Deploying Burner..."
                         : "Create Burner"}
-                </button>
+                </button> */}
 
-                <div className="bg-gray-800 shadow-md rounded-lg p-4 sm:p-6 mb-6 w-full max-w-md">
+                {/* <div className="bg-gray-800 shadow-md rounded-lg p-4 sm:p-6 mb-6 w-full max-w-md">
                     <div className="text-lg sm:text-xl font-semibold mb-4 text-white">{`Burners Deployed: ${account.count}`}</div>
                     <div className="mb-4">
                         <label
@@ -162,7 +162,7 @@ function App({ sdk }: { sdk: SDK<Schema> }) {
                     >
                         Clear Burners
                     </button>
-                </div>
+                </div> */}
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
                     <div className="bg-gray-700 p-4 rounded-lg shadow-inner">
@@ -230,7 +230,7 @@ function App({ sdk }: { sdk: SDK<Schema> }) {
                         </div>
                     </div>
                 </div>
-
+{/* 
                 <div className="mt-8 overflow-x-auto">
                     <table className="w-full border-collapse border border-gray-700">
                         <thead>
@@ -299,7 +299,7 @@ function App({ sdk }: { sdk: SDK<Schema> }) {
                             )}
                         </tbody>
                     </table>
-                </div>
+                </div> */}
             </div>
         </div>
     );
