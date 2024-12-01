@@ -146,6 +146,8 @@ const handleKeyPress = async (e: KeyboardEvent) => {
   }
 
   if (direction) {
+    console.log("Direction triggered:", direction);
+    console.log("Account:", account.account);
     chompSound.play();
     await client.actions.move({
       account: account.account,
@@ -196,8 +198,6 @@ useEffect(() => {
           </div>
           <div className="flex-1 space-y-6">
             <div className="bg-gray-700 p-4 rounded-lg shadow-inner">
-              <div className="grid grid-cols-3 gap-2 w-full h-48">
-                <div className="col-start-2">
                   <button
                     className="h-12 w-12 bg-gray-600 rounded-full shadow-md active:shadow-inner active:bg-gray-500 focus:outline-none text-2xl font-bold text-gray-200"
                     onClick={async () => {
@@ -208,16 +208,6 @@ useEffect(() => {
                     +
                   </button>
                 </div>
-                <div className="col-span-3 text-center text-base text-white">
-                  Moves Left: {moves ? `${moves.remaining}` : "Need to Spawn"}
-                </div>
-                <div className="col-span-3 text-center text-base text-white">
-                  {position
-                    ? `x: ${position?.vec?.x}, y: ${position?.vec?.y}`
-                    : "Need to Spawn"}
-                </div>
-                <div className="col-span-3 text-center text-base text-white">
-                  {moves && moves.last_direction}
                 </div>
               </div>
             </div>
@@ -255,6 +245,8 @@ useEffect(() => {
                         account: account.account,
                         direction: { type: direction },
                       });
+                      console.log("Direction triggered:", direction);
+    console.log("Account:", account.account);
                     }}
                   >
                     {label}
