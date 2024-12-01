@@ -8,6 +8,7 @@ import { useDojo } from "./useDojo.tsx";
 import useModel from "./useModel.tsx";
 import { useSystemCalls } from "./useSystemCalls.ts";
 import World from "./World";
+import useBoard from "./Board";
 
 import Navbar from "./components/Navbar";
 // import Endscreen from "./components/Endscreen";
@@ -38,22 +39,8 @@ function App({ sdk }: { sdk: SDK<Schema> }) {
     [account?.account.address]
   );
 
-  // Create a 20x20 grid with borders (1s) and inner cells (0s)
-  const [grid] = useState(() => {
-    const size = 20;
-    const newGrid = Array(size)
-      .fill(0)
-      .map(() => Array(size).fill(0));
-
-    // Fill top and bottom borders
-    for (let i = 0; i < size; i++) {
-      newGrid[0][i] = 1; // Top border
-      newGrid[size - 1][i] = 1; // Bottom border
-      newGrid[i][0] = 1; // Left border
-      newGrid[i][size - 1] = 1; // Right border
-    }
-    return newGrid;
-  });
+  // Replace the grid useState with useBoard hook
+  const grid = useBoard();
 
   useEffect(() => {
     let unsubscribe: (() => void) | undefined;
@@ -137,21 +124,26 @@ function App({ sdk }: { sdk: SDK<Schema> }) {
     <Navbar/>
     <div className="bg-black min-h-screen w-full p-4 sm:p-8">
       <div className="max-w-7xl mx-auto">
-        <button
-          className="mb-6 px-6 py-2 bg-yellow-400 rounded-full shadow-md active:shadow-inner active:bg-yellow-500 focus:outline-none text-xl font-bold text-black"
-          onClick={() => {
-            setIsPlaying(!isPlaying);
-            beginningSound.play();
-          }}
-        >
-          {isPlaying ? "Pause" : "Play"}
-        </button>
-        <button
-          className="mb-6 ml-4 px-6 py-2 bg-yellow-400 rounded-full shadow-md active:shadow-inner active:bg-yellow-500 focus:outline-none text-xl font-bold text-black"
-          onClick={() => account?.create()}
-        >
-          {account?.isDeploying ? "Deploying Burner..." : "Create Burner"}
-        </button>
+        <div className="flex items-center justify-between mb-6">
+          <img src="/assets/logo.png" alt="Game Logo" className="h-12" />
+          <div>
+            <button
+              className="px-6 py-2 bg-yellow-400 rounded-full shadow-md active:shadow-inner active:bg-yellow-500 focus:outline-none text-xl font-bold text-black"
+              onClick={() => {
+                setIsPlaying(!isPlaying);
+                beginningSound.play();
+              }}
+            >
+              {isPlaying ? "Pause" : "Play"}
+            </button>
+            <button
+              className="ml-4 px-6 py-2 bg-yellow-400 rounded-full shadow-md active:shadow-inner active:bg-yellow-500 focus:outline-none text-xl font-bold text-black"
+              onClick={() => account?.create()}
+            >
+              {account?.isDeploying ? "Deploying Burner..." : "Create Burner"}
+            </button>
+          </div>
+        </div>
         <div className="flex flex-col md:flex-row gap-6">
           <div className="flex-1">
             <World grid={grid} position={position} />
